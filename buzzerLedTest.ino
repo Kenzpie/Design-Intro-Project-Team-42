@@ -11,13 +11,13 @@ void setup() {
 }
 
   // Check if the temperature is above 100 & less than 103
-  if ((tempF > 100.0) && (tempF < 103.0)) {
+  if ((sensors.getTempFByIndex > 100.0) && (sensors.getTempFByIndex < 103.0)) {
     digitalWrite(BUZZER_PIN, LOW);  // Turn buzzer off
     digitalWrite(LED_PIN, HIGH);     // Turn LED on if temperature is above threshold
   } 
   // Check if the temperature is above 102
 
-  else if(tempF > 102.0){
+  else if(sensors.getTempFByIndex > 102.0){
     digitalWrite(BUZZR_PIN, HIGH);   // Turn buzzer off if temperature is below threshold
     digitalWrite(LED_PIN, HIGH);      // Turn LED off if temperature is below threshold
   } 
