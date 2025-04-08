@@ -1,31 +1,63 @@
+//Parker's libraries 
 #include <OneWire.h>
 #include <DallasTemperature.h>
 
-// Data wire is conntec to the Arduino digital pin 4
-#define ONE_WIRE_BUS 4
+//Syndey's libraries
 
-// Setup a oneWire instance to communicate with any OneWire devices
+
+//David's libraries
+
+
+//----------------------------------------------------------------------------------------------------------------------
+
+//Pin definitions
+#define ONE_WIRE_BUS 4  // Pin connceted to Temp Sensor
+#define BUZZER_PIN 6    // Pin connected to Buzzer
+#define LED_PIN 10      // Pin connected to LED
+
+// Temp Sensor: Setup a oneWire instance to communicate with any OneWire devices
 OneWire oneWire(ONE_WIRE_BUS);
 
-// Pass our oneWire reference to Dallas Temperature sensor 
+// Temp Sensor: Pass our oneWire reference to Dallas Temperature sensor 
 DallasTemperature sensors(&oneWire);
 
+//----------------------------------------------------------------------------------------------------------------------
 void setup(void)
 {
-  // Start serial communication for debugging purposes
-  Serial.begin(9600);
-  // Start up the library
-  sensors.begin();
+  Serial.begin(9600); // Start serial communication for debugging purposes
+  sensors.begin();    // Start up the library
+  
+  pinMode(BUZZER_PIN, OUTPUT);  // Set buzzer pin as output
+  pinMode(LED_PIN, OUTPUT);     // Set LED pin as output
 }
 
 void loop(void){ 
   // Call sensors.requestTemperatures() to issue a global temperature and Requests to all devices on the bus
   sensors.requestTemperatures(); 
-  
+
+// Print temps to Serial Monitor
   Serial.print("Celsius temperature: ");
-  // Why "byIndex"? You can have more than one IC on the same bus. 0 refers to the first IC on the wire
   Serial.print(sensors.getTempCByIndex(0)); 
   Serial.print(" - Fahrenheit temperature: ");
   Serial.println(sensors.getTempFByIndex(0));
+
+  // Check if the temperature is above 100 & less than 103
+  if ((sensors.getTempFByIndex(0) > 65.0) && (sensors.getTempFByIndex(0) < 70.0)) {
+    digitalWrite(BUZZER_PIN, LOW);  // Turn buzzer off
+    digitalWrite(LED_PIN, HIGH);     // Turn LED on if temperature is above threshold
+  } 
+  
+  // Check if the temperature is above 102
+  else if(sensors.getTempFByIndex(0) > 70.0){
+    digitalWrite(BUZZER_PIN, HIGH);   // Turn buzzer off if temperature is below threshold
+    digitalWrite(LED_PIN, HIGH);      // Turn LED off if temperature is below threshold
+  } 
+
+   // Check if the temperature is less than 101
+  else {
+    digitalWrite(BUZZER_PIN, LOW);   // Turn buzzer off if temperature is below threshold
+    digitalWrite(LED_PIN, LOW);     // Turn
+  }
+
   delay(1000);
 }
