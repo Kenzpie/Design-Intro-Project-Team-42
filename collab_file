@@ -1,29 +1,31 @@
-//library
-#include <dht11.h>
-#define DHT11PIN 2
+#include <OneWire.h>
+#include <DallasTemperature.h>
 
-dht11 DHT11;
+// Data wire is conntec to the Arduino digital pin 4
+#define ONE_WIRE_BUS 4
 
-void setup()
+// Setup a oneWire instance to communicate with any OneWire devices
+OneWire oneWire(ONE_WIRE_BUS);
+
+// Pass our oneWire reference to Dallas Temperature sensor 
+DallasTemperature sensors(&oneWire);
+
+void setup(void)
 {
+  // Start serial communication for debugging purposes
   Serial.begin(9600);
+  // Start up the library
+  sensors.begin();
 }
 
-//reads DHT11 and shows humidity and temperature in Fahrenheit
-void loop()
-{
-  Serial.println();
-
-  int chk = DHT11.read(DHT11PIN);
-
-  Serial.print("Humidity (%): ");
-  Serial.println((float)DHT11.humidity, 2);
-
-  float tempC = (float)DHT11.temperature;
-  float tempF = (tempC * 9.0 / 5.0) + 32.0;
-
-  Serial.print("Temperature (F): ");
-  Serial.println(tempF, 2);
-
+void loop(void){ 
+  // Call sensors.requestTemperatures() to issue a global temperature and Requests to all devices on the bus
+  sensors.requestTemperatures(); 
+  
+  Serial.print("Celsius temperature: ");
+  // Why "byIndex"? You can have more than one IC on the same bus. 0 refers to the first IC on the wire
+  Serial.print(sensors.getTempCByIndex(0)); 
+  Serial.print(" - Fahrenheit temperature: ");
+  Serial.println(sensors.getTempFByIndex(0));
   delay(1000);
 }
