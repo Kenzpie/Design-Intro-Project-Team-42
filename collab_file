@@ -4,16 +4,22 @@
 
 //Syndey's libraries
 
-
 //David's libraries
-
+#include<LiquidCrystal.h>
 
 //----------------------------------------------------------------------------------------------------------------------
 
 //Pin definitions
-#define ONE_WIRE_BUS 4  // Pin connceted to Temp Sensor
+#define ONE_WIRE_BUS 7  // Pin connceted to Temp Sensor
 #define BUZZER_PIN 6    // Pin connected to Buzzer
 #define LED_PIN 10      // Pin connected to LED
+
+const int rs = 12,
+          en = 11, d4 = 5, d5 = 4, d6 = 3, d7 = 2;
+          //pin assigments for LCD setup
+
+LiquidCrystal myLCD(rs, en, d4, d5, d6, d7); 
+// Data wire is conntec to the Arduino digital pin 4
 
 // Temp Sensor: Setup a oneWire instance to communicate with any OneWire devices
 OneWire oneWire(ONE_WIRE_BUS);
@@ -29,9 +35,15 @@ void setup(void)
   
   pinMode(BUZZER_PIN, OUTPUT);  // Set buzzer pin as output
   pinMode(LED_PIN, OUTPUT);     // Set LED pin as output
+
+   myLCD.begin(16, 2); //lcd on
+  myLCD.print("Heat Sensor: ON"); //opening message once turned on
+  delay(2000);
+  myLCD.clear(); // clears message off lcd before loop begins and
 }
 
 void loop(void){ 
+  
   // Call sensors.requestTemperatures() to issue a global temperature and Requests to all devices on the bus
   sensors.requestTemperatures(); 
 
@@ -43,12 +55,12 @@ void loop(void){
 
   // Check if the temperature is above 100 & less than 103
   if ((sensors.getTempFByIndex(0) > 65.0) && (sensors.getTempFByIndex(0) < 70.0)) {
-    digitalWrite(BUZZER_PIN, LOW);  // Turn buzzer off
+    digitalWrite(BUZZER_PIN, LOW);  // Turn buzzer off  
     digitalWrite(LED_PIN, HIGH);     // Turn LED on if temperature is above threshold
   } 
   
   // Check if the temperature is above 102
-  else if(sensors.getTempFByIndex(0) > 70.0){
+  else if(sensors.getTempFByIndex(0) > 75.0){
     digitalWrite(BUZZER_PIN, HIGH);   // Turn buzzer off if temperature is below threshold
     digitalWrite(LED_PIN, HIGH);      // Turn LED off if temperature is below threshold
   } 
@@ -58,6 +70,18 @@ void loop(void){
     digitalWrite(BUZZER_PIN, LOW);   // Turn buzzer off if temperature is below threshold
     digitalWrite(LED_PIN, LOW);     // Turn
   }
+
+  myLCD.setCursor(0,0); //0,0 is top line of lcd
+    myLCD.print("Temperature: "); //prints reading from dht11 pin 2
+    myLCD.setCursor(0,1);
+    myLCD.print(sensors.getTempFByIndex(0));
+    
+    delay(2000);
+    myLCD.clear(); // clears message off lcd before loop begins and
+
+    myLCD.print("Humidity: "); //prints reading from dht11 pin 2
+    myLCD.setCursor(0,1);
+    myLCD.print(sensors.getTempFByIndex(0));
 
   delay(1000);
 }
